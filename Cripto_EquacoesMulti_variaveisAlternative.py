@@ -1,6 +1,6 @@
 import operator
 
-from  sympy import *
+from sympy import *
 from sympy.abc import x
 import numpy as np
 import scipy.linalg
@@ -102,12 +102,6 @@ Ma = [[1, 0, 1, 1, 0],
 
 ############# Definicao de Mainv ###############################
 
-Mainv=[[[0, 0, 1, 1, 1],
-        [1, 1, 1, 1, 0],
-        [0, 1, 0, 1, 1],
-        [1, 1, 1, 0, 0],
-        [1, 1, 1, 0, 1 ]]]
-
 ############# Definicao de Mb ###############################
 
 Mb = [[1, 0, 0, 1, 1],
@@ -118,18 +112,18 @@ Mb = [[1, 0, 0, 1, 1],
 
 ############# Definicao de Mbinv ###############################
 
-Mbinv = [[0, 0, 0, 0, 1],
-         [0, 0, 0, 1, 1],
-         [1, 1, 1, 1, 1],
-         [1, 0, 1, 1, 1],
-         [0, 0, 1, 1, 0]]
-
 ############# vetores  constantes #########################
 
 c = [1, 0, 1, 1, 1]
 d = [1, 0, 1, 0, 0]
 
 vetX=[x1, x2, x3, x4, x5]
+
+# Definição da matriz A inversa
+Mainv = Matrix(Ma).inv_mod(2).tolist()
+
+# Definição da matriz B inversa
+Mbinv = Matrix(Mb).inv_mod(2).tolist()
 
 ############## definição do vetor intermediário u ############
 
