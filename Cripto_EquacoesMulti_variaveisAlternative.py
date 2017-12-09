@@ -34,29 +34,14 @@ def invmodp(a,p):
 
     return resposta
 
-def multiplicaMatriz(A,B):
-    linhaA=len(A)
-    if isinstance(A[0], list):
-        colunaA = len(A[0])
-    else:
-        colunaA = 1
-    linhaB = len(B)
-    if isinstance(B[0], list):
-        colunaB = len(B[0])
-    else:
-        colunaB = 1
-    resp = []
-    if(colunaA != linhaB):
-        print("Impossivel Multiplicar Matrizes colunaA dif linhaB")
-        return resp
-    for l in range(linhaA):
-        resp.append([])
-        for c in range(colunaB):
-            resp[l].append(0)
-            for k in range(colunaA):
-                resp[l][c]+=A[l][k]*B[k][c]
 
-    return resp
+def multiplicaMatrizPorVetor(matriz_a, vetor_b):
+    if isinstance(matriz_a, list):
+        matriz_a = np.matrix(matriz_a)
+    if isinstance(vetor_b, list):
+        vetor_b = np.matrix(vetor_b).T
+    return (matriz_a * vetor_b).T.tolist()[0]
+
 
 def transporLista(lista):
     if isinstance(lista, list):
@@ -123,7 +108,7 @@ Mb = [[1, 0, 0, 1, 1 ], [0, 0, 1, 1, 0], [1, 1, 0, 0, 1], [1, 1, 0, 0, 0], [1, 0
 
 Mbinv = [[0, 0, 0, 0, 1 ], [0, 0, 0, 1, 1], [1, 1, 1, 1, 1], [1, 0, 1, 1, 1 ], [0, 0, 1, 1, 0]]
 
-############# vetores  contantes #########################
+############# vetores  constantes #########################
 
 c = [1, 0, 1, 1, 1]
 d = [1, 0, 1, 0, 0]
@@ -154,11 +139,6 @@ v.append( Poly(f2,domain = GF(2)))
 v.append( Poly(f3,domain = GF(2)))
 v.append( Poly(f4,domain = GF(2)))
 
-
-
-
-
-
 v_d=[]
 v_d.append(v[0]-d[0])
 v_d.append(v[1]-d[1])
@@ -166,16 +146,10 @@ v_d.append(v[2]-d[2])
 v_d.append(v[3]-d[3])
 v_d.append(v[4]-d[4])
 
+y = multiplicaMatrizPorVetor(Mbinv, v_d)
 
-y=[]
-
-y.append(Poly((Mbinv[0][0]*v_d[0])+ (Mbinv[0][1]*v_d[1]) + (Mbinv[0][2]*v_d[2]) + (Mbinv[0][3]*v_d[3]) + (Mbinv[0][4]*v_d[4]) ,domain = GF(2)))
-y.append(Poly((Mbinv[1][0]*v_d[0])+ (Mbinv[1][1]*v_d[1]) + (Mbinv[1][2]*v_d[2]) + (Mbinv[1][3]*v_d[3]) + (Mbinv[1][4]*v_d[4]) ,domain = GF(2)))
-y.append(Poly((Mbinv[2][0]*v_d[0])+ (Mbinv[2][1]*v_d[1]) + (Mbinv[2][2]*v_d[2]) + (Mbinv[2][3]*v_d[3]) + (Mbinv[2][4]*v_d[4]) ,domain = GF(2)))
-y.append(Poly((Mbinv[3][0]*v_d[0])+ (Mbinv[3][1]*v_d[1]) + (Mbinv[3][2]*v_d[2]) + (Mbinv[3][3]*v_d[3]) + (Mbinv[3][4]*v_d[4]) ,domain = GF(2)))
-y.append(Poly((Mbinv[4][0]*v_d[0])+ (Mbinv[4][1]*v_d[1]) + (Mbinv[4][2]*v_d[2]) + (Mbinv[4][3]*v_d[3]) + (Mbinv[4][4]*v_d[4]) ,domain = GF(2)))
-
-
+for i, poli in enumerate(y):
+    y[i] = poli.set_domain(GF(2))
 
 print("y1>>"+ str(y[1]))
 print("v5>>" + str(v[4]))
