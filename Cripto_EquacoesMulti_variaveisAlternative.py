@@ -36,9 +36,15 @@ def invmodp(a,p):
 
 def multiplicaMatriz(A,B):
     linhaA=len(A)
-    colunaA=len(A[0])
+    if isinstance(A[0], list):
+        colunaA = len(A[0])
+    else:
+        colunaA = 1
     linhaB = len(B)
-    colunaB= len(B[0])
+    if isinstance(B[0], list):
+        colunaB = len(B[0])
+    else:
+        colunaB = 1
     resp = []
     if(colunaA != linhaB):
         print("Impossivel Multiplicar Matrizes colunaA dif linhaB")
@@ -52,6 +58,21 @@ def multiplicaMatriz(A,B):
 
     return resp
 
+def transporLista(lista):
+    if isinstance(lista, list):
+        return np.matrix(lista).T.tolist()
+    raise TypeError("Argumento precisa ser do tipo list!")
+
+
+# y = Ax + b
+def funcaoLinear(matriz_a, x, b):
+    if isinstance(matriz_a, list):
+        matriz_a = np.matrix(matriz_a)
+    if isinstance(x, list):
+        x = np.matrix(x).T
+    if isinstance(b, list):
+        b = np.matrix(b).T
+    return ((matriz_a * x) + b).T.tolist()[0]
 
 ############## primo escolhido #################
 
@@ -111,13 +132,7 @@ vetX=[x1, x2, x3, x4, x5]
 
 ############## definição do vetor intermediário u ############
 
-
-u=[]
-u.append(((Ma[0][0]*vetX[0])+ (Ma[0][1]*vetX[1]) + (Ma[0][2]*vetX[2]) + (Ma[0][3]*vetX[3]) + (Ma[0][4]*vetX[4]) + c[0]))
-u.append(((Ma[1][0]*vetX[0])+ (Ma[1][1]*vetX[1]) + (Ma[1][2]*vetX[2]) + (Ma[1][3]*vetX[3]) + (Ma[1][4]*vetX[4]) + c[1]))
-u.append(((Ma[2][0]*vetX[0])+ (Ma[2][1]*vetX[1]) + (Ma[2][2]*vetX[2]) + (Ma[2][3]*vetX[3]) + (Ma[2][4]*vetX[4])+ c[2]))
-u.append(((Ma[3][0]*vetX[0])+ (Ma[3][1]*vetX[1]) + (Ma[3][2]*vetX[2]) + (Ma[3][3]*vetX[3]) + (Ma[3][4]*vetX[4])+ c[3]))
-u.append(((Ma[4][0]*vetX[0])+ (Ma[4][1]*vetX[1]) + (Ma[4][2]*vetX[2]) + (Ma[4][3]*vetX[3]) + (Ma[4][4]*vetX[4])+ c[4]))
+u = funcaoLinear(Ma, vetX, c)
 
 ux=expand((u[0]+ expand(u[1]*(x)) + expand(u[2]*(x**2)) +  expand(u[3]*(x**3)) + expand(u[4]*(x**4)) )*
           (u[0] + expand(u[1] * (x**8)) + expand(u[2] * (x ** 16)) + expand(u[3] * (x ** 24)) + expand(u[4] * (x ** 32))))
