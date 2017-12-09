@@ -1,3 +1,5 @@
+import operator
+
 from  sympy import *
 from sympy.abc import x
 import numpy as np
@@ -35,7 +37,11 @@ def invmodp(a,p):
     return resposta
 
 
-def multiplicaMatrizPorVetor(matriz_a, vetor_b):
+def modulo_lista(lista, modulo):
+    return [item % modulo for item in lista]
+
+
+def multiplica_matriz_por_vetor(matriz_a, vetor_b):
     if isinstance(matriz_a, list):
         matriz_a = np.matrix(matriz_a)
     if isinstance(vetor_b, list):
@@ -43,21 +49,15 @@ def multiplicaMatrizPorVetor(matriz_a, vetor_b):
     return (matriz_a * vetor_b).T.tolist()[0]
 
 
-def transporLista(lista):
+def transpor_lista(lista):
     if isinstance(lista, list):
         return np.matrix(lista).T.tolist()
     raise TypeError("Argumento precisa ser do tipo list!")
 
 
 # y = Ax + b
-def funcaoLinear(matriz_a, x, b):
-    if isinstance(matriz_a, list):
-        matriz_a = np.matrix(matriz_a)
-    if isinstance(x, list):
-        x = np.matrix(x).T
-    if isinstance(b, list):
-        b = np.matrix(b).T
-    return ((matriz_a * x) + b).T.tolist()[0]
+def funcao_linear(matriz_a, x, b):
+    return list(map(operator.add, multiplica_matriz_por_vetor(matriz_a, x), b))
 
 ############## primo escolhido #################
 
@@ -94,19 +94,35 @@ if(mdc(h,(q**n)-1)==1):
 
 ############# Definicao de Ma ###############################
 
-Ma = [[1, 0, 1, 1, 0  ], [0, 1, 1, 0, 1], [1, 1, 0, 0, 1 ], [0, 1, 0, 1, 0], [0, 0, 0, 1, 1 ]]
+Ma = [[1, 0, 1, 1, 0],
+      [0, 1, 1, 0, 1],
+      [1, 1, 0, 0, 1],
+      [0, 1, 0, 1, 0],
+      [0, 0, 0, 1, 1 ]]
 
 ############# Definicao de Mainv ###############################
 
-Mainv=[[[0, 0, 1, 1, 1  ], [1, 1, 1, 1, 0 ], [0, 1, 0, 1, 1 ], [1, 1, 1, 0, 0], [1, 1, 1, 0, 1 ]]]
+Mainv=[[[0, 0, 1, 1, 1],
+        [1, 1, 1, 1, 0],
+        [0, 1, 0, 1, 1],
+        [1, 1, 1, 0, 0],
+        [1, 1, 1, 0, 1 ]]]
 
 ############# Definicao de Mb ###############################
 
-Mb = [[1, 0, 0, 1, 1 ], [0, 0, 1, 1, 0], [1, 1, 0, 0, 1], [1, 1, 0, 0, 0], [1, 0, 0, 0, 0]]
+Mb = [[1, 0, 0, 1, 1],
+      [0, 0, 1, 1, 0],
+      [1, 1, 0, 0, 1],
+      [1, 1, 0, 0, 0],
+      [1, 0, 0, 0, 0]]
 
 ############# Definicao de Mbinv ###############################
 
-Mbinv = [[0, 0, 0, 0, 1 ], [0, 0, 0, 1, 1], [1, 1, 1, 1, 1], [1, 0, 1, 1, 1 ], [0, 0, 1, 1, 0]]
+Mbinv = [[0, 0, 0, 0, 1],
+         [0, 0, 0, 1, 1],
+         [1, 1, 1, 1, 1],
+         [1, 0, 1, 1, 1],
+         [0, 0, 1, 1, 0]]
 
 ############# vetores  constantes #########################
 
@@ -117,7 +133,7 @@ vetX=[x1, x2, x3, x4, x5]
 
 ############## definição do vetor intermediário u ############
 
-u = funcaoLinear(Ma, vetX, c)
+u = funcao_linear(Ma, vetX, c)
 
 ux=expand((u[0]+ expand(u[1]*(x)) + expand(u[2]*(x**2)) +  expand(u[3]*(x**3)) + expand(u[4]*(x**4)) )*
           (u[0] + expand(u[1] * (x**8)) + expand(u[2] * (x ** 16)) + expand(u[3] * (x ** 24)) + expand(u[4] * (x ** 32))))
@@ -131,23 +147,17 @@ f3=r.coeff(x**3)
 f2=r.coeff(x**2)
 f1=r.coeff(x)
 
+funcao = [f0, f1, f2, f3, f4]
 
-v=[]
-v.append( Poly(f0,domain = GF(2)))
-v.append( Poly(f1,domain = GF(2)))
-v.append( Poly(f2,domain = GF(2)))
-v.append( Poly(f3,domain = GF(2)))
-v.append( Poly(f4,domain = GF(2)))
+# Cria o vetor v
+v = [Poly(fi, domain=GF(2)) for fi in funcao]
 
-v_d=[]
-v_d.append(v[0]-d[0])
-v_d.append(v[1]-d[1])
-v_d.append(v[2]-d[2])
-v_d.append(v[3]-d[3])
-v_d.append(v[4]-d[4])
+# Subtrai o vetor d do vetor v
+v_d = list(map(operator.sub, v, d))
 
-y = multiplicaMatrizPorVetor(Mbinv, v_d)
+y = multiplica_matriz_por_vetor(Mbinv, v_d)
 
+# Reaplica o campo de Galois ao resultado (senão fica domínio ZZ)
 for i, poli in enumerate(y):
     y[i] = poli.set_domain(GF(2))
 
@@ -160,16 +170,7 @@ cif=[y[0](1,1,1,1,1),y[1](1,1,1,1,1),y[2](1,1,1,1,1),y[3](1,1,1,1,1),y[4](1,1,1,
 print(">>>>> cifrado:" + str(cif))
 
 
-
-
-
-dec=[]
-dec.append(((Mb[0][0]*cif[0]) + (Mb[0][1]*cif[1]) + (Mb[0][2]*cif[2]) + (Mb[0][3]*cif[3]) + (Mb[0][4]*cif[4])+ d[0])%2)
-dec.append(((Mb[1][0]*cif[0]) + (Mb[1][1]*cif[1]) + (Mb[1][2]*cif[2]) + (Mb[1][3]*cif[3]) + (Mb[1][4]*cif[4])+ d[1])%2)
-dec.append(((Mb[2][0]*cif[0]) + (Mb[2][1]*cif[1]) + (Mb[2][2]*cif[2]) + (Mb[2][3]*cif[3]) + (Mb[2][4]*cif[4])+ d[2])%2)
-dec.append(((Mb[3][0]*cif[0]) + (Mb[3][1]*cif[1]) + (Mb[3][2]*cif[2]) + (Mb[3][3]*cif[3]) + (Mb[3][4]*cif[4])+ d[3])%2)
-dec.append(((Mb[4][0]*cif[0]) + (Mb[4][1]*cif[1]) + (Mb[4][2]*cif[2]) + (Mb[4][3]*cif[3]) + (Mb[4][4]*cif[4])+ d[4])%2)
-
+dec = modulo_lista(funcao_linear(Mb, cif, d), 2)
 
 Ma = np.array( [[1, 0, 1, 1, 0  ], [0, 1, 1, 0, 1], [1, 1, 0, 0, 1 ], [0, 1, 0, 1, 0], [0, 0, 0, 1, 1 ]])
 
