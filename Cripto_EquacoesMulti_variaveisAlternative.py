@@ -100,8 +100,6 @@ Ma = [[1, 0, 1, 1, 0],
       [0, 1, 0, 1, 0],
       [0, 0, 0, 1, 1 ]]
 
-############# Definicao de Mainv ###############################
-
 ############# Definicao de Mb ###############################
 
 Mb = [[1, 0, 0, 1, 1],
@@ -109,8 +107,6 @@ Mb = [[1, 0, 0, 1, 1],
       [1, 1, 0, 0, 1],
       [1, 1, 0, 0, 0],
       [1, 0, 0, 0, 0]]
-
-############# Definicao de Mbinv ###############################
 
 ############# vetores  constantes #########################
 
@@ -167,13 +163,7 @@ print("Ciphertext >>>>> " + str(cif))
 ############################################ decriptacao  #################################################################
 
 
-v_linha=[]
-v_linha.append(((Mb[0][0] * cif[0]) + (Mb[0][1] * cif[1]) + (Mb[0][2] * cif[2]) + (Mb[0][3] * cif[3]) + (Mb[0][4] * cif[4]) + d[0]))
-v_linha.append(((Mb[1][0] * cif[0]) + (Mb[1][1] * cif[1]) + (Mb[1][2] * cif[2]) + (Mb[1][3] * cif[3]) + (Mb[1][4] * cif[4]) + d[1]))
-v_linha.append(((Mb[2][0] * cif[0]) + (Mb[2][1] * cif[1]) + (Mb[2][2] * cif[2]) + (Mb[2][3] * cif[3]) + (Mb[2][4] * cif[4]) + d[2]))
-v_linha.append(((Mb[3][0] * cif[0]) + (Mb[3][1] * cif[1]) + (Mb[3][2] * cif[2]) + (Mb[3][3] * cif[3]) + (Mb[3][4] * cif[4]) + d[3]))
-v_linha.append(((Mb[4][0] * cif[0]) + (Mb[4][1] * cif[1]) + (Mb[4][2] * cif[2]) + (Mb[4][3] * cif[3]) + (Mb[4][4] * cif[4]) + d[4]))
-
+v_linha = funcao_linear(Mb, cif, d)
 
 vx=(expand((v_linha[0] + expand(v_linha[1] * (x)) + expand(v_linha[2] * (x**2)) + expand(v_linha[3] * (x**3)) + expand(v_linha[4] * (x**4))) ** h_linha))
 
@@ -181,7 +171,6 @@ vx=(expand((v_linha[0] + expand(v_linha[1] * (x)) + expand(v_linha[2] * (x**2)) 
 qr, vr = div(vx, f, domain = GF(2))
 
 u_linha=[]
-dec = modulo_lista(funcao_linear(Mb, cif, d), 2)
 
 u_linha.append(int(vr + expand((-1)*(x**4)*(vr.coeff(x**4))) + expand((-1)*(x**3)*(vr.coeff(x**3))) + expand((-1)*(x**2)*(vr.coeff(x**2))) + expand((-1)*(x)*(vr.coeff(x)))))
 u_linha.append(int(vr.coeff(x)))
@@ -191,23 +180,12 @@ u_linha.append(int(vr.coeff(x**4)))
 
 
 
-
-u_linha_c_linha=[]
-u_linha_c_linha.append(u_linha[0]-c[0])
-u_linha_c_linha.append(u_linha[1]-c[1])
-u_linha_c_linha.append(u_linha[2]-c[2])
-u_linha_c_linha.append(u_linha[3]-c[3])
-u_linha_c_linha.append(u_linha[4]-c[4])
+u_linha_c_linha = list(map(operator.sub, u_linha, c))
 
 
 
-x_linha=[]
-x_linha.append(((Mainv[0][0] * u_linha_c_linha[0]) + (Mainv[0][1] * u_linha_c_linha[1]) + (Mainv[0][2] * u_linha_c_linha[2]) + (Mainv[0][3] * u_linha_c_linha[3]) + (Mainv[0][4] * u_linha_c_linha[4])) % 2)
-x_linha.append(((Mainv[1][0] * u_linha_c_linha[0]) + (Mainv[1][1] * u_linha_c_linha[1]) + (Mainv[1][2] * u_linha_c_linha[2]) + (Mainv[1][3] * u_linha_c_linha[3]) + (Mainv[1][4] * u_linha_c_linha[4])) % 2)
-x_linha.append(((Mainv[2][0] * u_linha_c_linha[0]) + (Mainv[2][1] * u_linha_c_linha[1]) + (Mainv[2][2] * u_linha_c_linha[2]) + (Mainv[2][3] * u_linha_c_linha[3]) + (Mainv[2][4] * u_linha_c_linha[4])) % 2)
-x_linha.append(((Mainv[3][0] * u_linha_c_linha[0]) + (Mainv[3][1] * u_linha_c_linha[1]) + (Mainv[3][2] * u_linha_c_linha[2]) + (Mainv[3][3] * u_linha_c_linha[3]) + (Mainv[3][4] * u_linha_c_linha[4])) % 2)
-x_linha.append(((Mainv[4][0] * u_linha_c_linha[0]) + (Mainv[4][1] * u_linha_c_linha[1]) + (Mainv[4][2] * u_linha_c_linha[2]) + (Mainv[4][3] * u_linha_c_linha[3]) + (Mainv[4][4] * u_linha_c_linha[4])) % 2)
+x_linha = Mbinv = modulo_lista(multiplica_matriz_por_vetor(Mainv, u_linha_c_linha), 2)
 
 print("\n")
 
-print("Back to PlainText >>>> " + str([x_linha[0], x_linha[1], x_linha[2], x_linha[3], x_linha[4]]))
+print("Back to PlainText >>>> " + str(x_linha))
