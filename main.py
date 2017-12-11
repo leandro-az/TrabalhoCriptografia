@@ -106,8 +106,7 @@ if __name__ == '__main__':
     print("PlainText >>>>" + str(mensagem_original))
     print("\n")
 
-    print(tuple(mensagem_original))
-
+    # Cifra a mensagem (usando o polinômio em y)
     mensagem_cifrada = [i.eval(tuple(mensagem_original)) for i in y]
 
     print("Ciphertext >>>>> " + str(mensagem_cifrada))
